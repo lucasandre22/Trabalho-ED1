@@ -12,14 +12,14 @@
 char *unlimited_scanf(char *string)
 {
     char letra;
-    int x=1,i;
+    int i;
     string=(char *)malloc(sizeof(char));
     if(!string)
         return NULL;
     scanf("%c", &letra);
     for(i=0;letra!='\n';i++)
     {
-        string=(char *)realloc(string,++x*sizeof(char));
+        string=(char *)realloc(string,(i+2)*sizeof(char));
         string[i]=letra;
         scanf("%c", &letra);
     }
