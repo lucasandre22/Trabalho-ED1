@@ -24,7 +24,7 @@ int main()
 {
     char *string=NULL;
     string=unlimited_scanf(string);
-    printf("%s\nString length:%d",vetor_strings,strlen(vetor_strings));
+    printf("%s\nString length:%d",string,strlen(string));
     free(vetor_strings);
     return 0;
 }
