@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/**Dicas para evitar warning:
+-Sempre inicializar um ponteiro apontando para NULL!!
+-Não deixar variáveis sem ser usadas!
+-Quando um ponteiro for apontar para algo, nao use *p=algo e sim p=algo!
+-
+**/
+
+char *unlimited_scanf(char *string)
+{
+    char letra;
+    int x=1,i;
+    string=(char *)malloc(sizeof(char));
+    if(!string)
+        return NULL;
+    scanf("%c", &letra);
+    for(i=0;letra!='\n';i++)
+    {
+        string=(char *)realloc(string,++x*sizeof(char));
+        string[i]=letra;
+        scanf("%c", &letra);
+    }
+    string[i]='\0';
+    return string;
+}
+
+int main()
+{
+    char *vetor_strings=NULL;
+    vetor_strings=unlimited_scanf(vetor_strings);
+    printf("%s\\%d",vetor_strings,strlen(vetor_strings));
+    free(vetor_strings);
+    return 0;
+}
