@@ -1,0 +1,16 @@
+void liberar(clista *l)
+{
+    no *u, *aux;
+    if(l!=NULL && l->cabesalho!=NULL)
+    {
+        u=l->cabesalho->proximo;
+        while(l->cabesalho!=u)
+        {
+            aux=u;
+            u=u->proximo;
+            free(aux);
+        }
+        free(l->cabesalho);
+        l->cabesalho=NULL;
+    }
+}

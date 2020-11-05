@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char *unlimited_scanf(char *string)
+{
+    char letter;
+    int i;
+    string=(char *)malloc(sizeof(char));
+    if(!string)
+        return NULL;
+    scanf("%c", &letter);
+    for(i=0;letter!='\n';i++)
+    {
+        string=(char *)realloc(string,(i+2)*sizeof(char));
+        string[i]=letter;
+        scanf("%c", &letter);
+    }
+    string[i]='\0';
+    return string;
+}
+
+int main()
+{
+    char *string=NULL;
+    string=unlimited_scanf(string);
+    printf("%s\nString length:%d",string,strlen(string));
+    free(string);
+    return 0;
+}

@@ -1,0 +1,69 @@
+7
+left_margin minor_island
+left_margin bat_cave
+right_margin minor_island
+right_margin bat_cave
+bat_cave left_margin
+bat_cave right_margin
+left_margin right_margin
+
+7
+left_margin minor_island
+left_margin bat_cave
+right_margin minor_island
+right_margin bat_cave
+bat_cave left_margin
+bat_cave right_margin
+bat_cave minor_island
+
+12
+bat_cave c
+bat_cave c
+c a
+c a
+a e
+a e
+a d
+a d
+a f
+a f
+f g
+f g
+
+20
+bat_cave c 
+bat_cave c
+c a
+c a
+a e
+a e
+a d
+a d
+a f
+a f
+f g
+f g
+f g
+f g
+f g
+a e
+a e
+a e
+a e
+f g
+
+14
+b c
+b c
+c a
+c a
+a e
+a e
+a d
+a d
+a f
+a f
+f g
+f g
+j k
+j k

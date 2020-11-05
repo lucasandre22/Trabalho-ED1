@@ -1,0 +1,270 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct _leave
+{
+    int key;
+    struct _leave *parent,*right,*left;
+} leave;
+
+typedef struct
+{
+    leave *root;
+} tree;
+
+void tree_init(tree *x)
+{
+    x->root=NULL;
+}
+
+void init_leave(leave *a)
+{
+    a->left=NULL;
+    a->right=NULL;
+    a->parent=NULL;
+}
+
+leave* tree_search(leave *x, int key)
+{
+    if(key==x->key)
+        return x;
+    else if(x==NULL)
+        return NULL;
+    if(x->key<key)
+        return tree_search(x->right,key);
+    else
+        return tree_search(x->left,key);
+}
+
+void tree_free(leave *x)
+{
+    if(x)
+    {
+        tree_free(x->left);
+        tree_free(x->right);
+        free(x);
+    }
+}
+
+leave* maximum_value(leave *x)
+{
+    leave *y;
+    if(x==NULL)
+        return NULL;
+    for(y=x; y->right!=NULL; y=y->right) {}
+    return y;
+}
+
+leave* minimum_value(leave *x)
+{
+    leave *y;
+    if(x==NULL)
+        return NULL;
+    for(y=x; y->left!=NULL; y=y->left) {}
+    return y;
+}
+
+void print_tree(leave *x)
+{
+    if(x)
+    {
+        print_tree(x->left);
+        printf("%d ", x->key);
+        print_tree(x->right);
+    }
+}
+
+leave* comeco_arvore(tree *x)
+{
+    leave *y;
+    for(y=x->root; y && y->left; y=y->left) {}
+    return y;
+}
+
+leave* final_arvore(tree *x)
+{
+    leave *y;
+    for(y=x->root; y && y->right; y=y->right) {}
+    return y;
+}
+
+void erase_tree(tree *x, int key)
+{
+    leave *y,*temp;
+    y=tree_search(x->root,key);
+    if(y==NULL)
+        return;
+    else if(y->right==NULL && y->left==NULL)//dois filhos null
+    {
+        if(x->root==y)
+            x->root=NULL;
+        else
+            {
+                if(y->key<y->parent->key)
+                    y->parent->left=NULL;
+                else
+                    y->parent->right=NULL;
+            }
+    }
+    else if(y->right==NULL)
+    {
+        y->left->parent=y->parent;
+        y->parent->left=temp;
+    }
+    else if(y->left==NULL)
+    {
+        y->right->parent=y->parent;
+        y->parent->right=temp;
+    }
+    else
+    {
+        temp=minimum_value(y->right);
+        y->parent->right=temp;//procura o menor da direita
+    }
+    free(y);
+}
+
+void transplantar(tree *x, leave *y, leave *z) //y o que vou remover, z oq vou colocar no lugar
+{
+    if(y->parent==NULL)
+        x->root=z;
+    else if(y==y->parent->left)
+        y->parent->left=z;
+    else if(y==y->parent->right)
+        y->parent->right=z;
+    if(z!=NULL)
+        z->parent=y->parent;
+}
+
+void delete_node(tree *x, int key)
+{
+    leave *y,*z;
+    y=tree_search(x->root,key);
+    if(y->left==NULL)
+        transplantar(x,y,y->right);
+    else if(y->right==NULL)
+        transplantar(x,y,y->left);
+    else
+    {
+        z=maximum_value(y->left);
+        if(z->parent!=y)
+        {
+            transplantar(x,z,z->right);
+            z->right=y->right;
+            z->right->parent=z;
+        }
+        transplantar(x,y,z);
+        z->left=y->left;
+        z->left->parent=z;
+    }
+
+}
+
+void tree_insert(tree *x, int key)
+{
+    leave *a=malloc(sizeof(leave)),*temp,*y;
+    init_leave(a);
+    a->key=key;
+    if(x->root==NULL)
+    {
+        x->root=a;
+        a->parent=NULL;
+    }
+    else
+    {
+        temp=x->root;
+        while(temp!=NULL)
+        {
+            y=temp;
+            if(temp->key>a->key)
+                temp=temp->left;
+            else
+                temp=temp->right;
+        }
+        if(a->key<y->key)
+            y->left=a;
+        else
+            y->right=a;
+        a->parent=y;
+    }
+}
+
+int main()
+{
+    int key,i,choose;
+    tree x;
+    leave *l=NULL;
+    tree_init(&x);
+    printf("Menu\n1-Insert\n2-Search\n3-Printf\n4-Maximum\n5-Minimum\n6-Comeco\n7-Final\n8-Remover\n");
+    scanf("%d", &choose);
+    while(choose!=-1)
+    {
+        switch(choose)
+        {
+        case 1:
+        {
+            scanf("%d", &key);
+            tree_insert(&x,key);
+            break;
+        }
+        case 2:
+        {
+            scanf("%d", &key);
+            l=tree_search(x.root,key);
+            if(l!=NULL && l->key==key)
+                printf("Foi achado!\n");
+            else
+                printf("Nao foi achado!\n");
+            l=NULL;
+            break;
+        }
+        case 3:
+        {
+            print_tree(x.root);
+            printf("\n");
+            break;
+        }
+        case 4:
+        {
+            l=maximum_value(x.root);
+            if(l!=NULL)
+                printf("Max: %d\n", l->key);
+            l=NULL;
+            break;
+        }
+        case 5:
+        {
+            l=minimum_value(x.root);
+            if(l!=NULL)
+                printf("Min: %d\n", l->key);
+            l=NULL;
+            break;
+        }
+        case 6:
+        {
+            l=comeco_arvore(&x);
+            printf("Comeco: %d\n", l->key);
+            l=NULL;
+            break;
+        }
+        case 7:
+        {
+            l=final_arvore(&x);
+            printf("Final: %d\n", l->key);
+            l=NULL;
+            break;
+        }
+        case 8:
+        {
+            scanf("%d", &key);
+            delete_node(&x,key);
+            break;
+        }
+        default :
+            printf("Am I a joke to you?\n");
+        }
+        scanf("%d", &choose);
+    }
+    tree_free(x.root);
+
+}

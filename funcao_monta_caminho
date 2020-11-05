@@ -1,0 +1,85 @@
+na main eu mando assim:
+monta_caminho(vetor_lista_localidades, tam_vet_id, vet_id);
+
+
+void monta_caminho(clista *vetor_lista_localidades, int tam_vet_id, char** vet_id)
+{
+    int posicao_lista,i,k,tamanho_vetor_caminhos=0,aux=1,primeira_vez=0,tem_solucao=1;
+    no **ponteiros,*proximo_ponteiros=NULL,*anterior_temp=NULL,*temp=NULL;
+
+    clista *vetor_lista_caminhos=(clista*)malloc(sizeof(clista));
+    ponteiros=(no**)malloc(tam_vet_id*sizeof(no*));
+    for(i=0; i<tam_vet_id; i++)
+        ponteiros[i]=NULL;
+    init(&vetor_lista_caminhos[tamanho_vetor_caminhos]);
+    //monta vetor de listas contendo os passeios, precisamos então após, fazer o merge entre as listas.
+    for(k=0; k<tam_vet_id; k++)
+    {
+        i=k;
+        primeira_vez=1;
+        //Monta o passeio correspondente, caso a lista não apontar para NULL.
+        while(vetor_lista_localidades[k].cabesalho!=NULL)
+        {
+            //Da realloc no vetor de caminhos.
+            if(k>0 && primeira_vez==1)
+            {
+                //Aux representa o tamanho do vetor_lista_caminhos + 1, para realizar o realloc.
+                aux++;
+                tamanho_vetor_caminhos++;
+                vetor_lista_caminhos=(clista*)realloc(vetor_lista_caminhos,aux*sizeof(clista));
+                init(&vetor_lista_caminhos[tamanho_vetor_caminhos]);
+                primeira_vez=0;
+            }
+            posicao_lista=vetor_lista_localidades[i].cabesalho->chave;
+            inserir(&vetor_lista_caminhos[tamanho_vetor_caminhos], posicao_lista);
+            //Aponta os ponteiros para os nos do primeiro caminho, armazenando esses ponteiros no vetor ponteiros.
+            if(k==0)
+                ponteiros[vetor_lista_caminhos[tamanho_vetor_caminhos].cabesalho->chave]=vetor_lista_caminhos[tamanho_vetor_caminhos].cabesalho;
+            else
+            {
+                //Se eles compartilham uma mesma localidade, temp vai apontar para esta localidade compartilhada no passeio que estou montando.
+                if(ponteiros[vetor_lista_caminhos[tamanho_vetor_caminhos].cabesalho->chave]!=NULL)
+                    temp=vetor_lista_caminhos[tamanho_vetor_caminhos].cabesalho;
+            }
+            //Remove o no respectivo na outra localidade.
+            remover_no(&vetor_lista_localidades[posicao_lista],vetor_lista_localidades[i].cabesalho->respectivo);
+            //Remove o primeiro no da localidade.
+            remover_no(&vetor_lista_localidades[i],vetor_lista_localidades[i].cabesalho);
+            i=posicao_lista;
+        }
+        if(k>0 && primeira_vez==0)
+        {
+            if(temp==NULL)//Se não houver localidades em comum nos 2 passeios, o programa para porque nao tem solução!
+            {
+                tem_solucao=0;
+                break;
+            }
+            else//Faz o merge das listas, utilizando ponteiros para os nodes, caso houver localidades em comum.
+            {
+                anterior_temp=temp->anterior;
+                proximo_ponteiros=ponteiros[temp->chave]->proximo;
+                ponteiros[temp->chave]->proximo=temp->anterior;
+                anterior_temp->anterior=ponteiros[temp->chave];
+                proximo_ponteiros->anterior=temp;
+                temp->proximo=proximo_ponteiros;
+            }
+            temp=NULL;
+        }
+    }
+    //Se não tiver solução, temos que liberar o vetor caminhos individualmente porque os caminhos não se conectam.
+    if(tem_solucao==0)
+    {
+        printf("Why so serious?\n");
+        for(i=0;i<tam_vet_id;i++)
+            liberar(&vetor_lista_localidades[i]);
+        for(i=0;i<=tamanho_vetor_caminhos;i++)
+            liberar(&vetor_lista_caminhos[i]);
+    }
+    else//O caminho final ficou na primeira posicao do vetor de lista caminhos, por ser mais prático.
+    {
+        escreve_caminho(&vetor_lista_caminhos[0],vet_id,tam_vet_id);
+        liberar(&vetor_lista_caminhos[0]);
+    }
+    free(vetor_lista_caminhos);
+    free(ponteiros);
+}
